@@ -18,6 +18,10 @@
 % It can also be estimated with the help of fairSIM plugin, which is
 % available at: https://github.com/fairSIM
 
+% We apply fairSIM as our SIM reconstruction algorithm. However, sometimes we do notice that the quality of fairSIM result
+% is not as good as the HR images provided by commerical microscope (e.g. OMattFWHMX). In this situation, we can skip the fairSIM part 
+% and directly use the HR images for pSIM reconstruction.
+
 %% Parameter k
 % Variable k should be a matrix of m*2, where m denotes the number of illumination patterns; 
 k(1,:) = [142.656,-152.367];
@@ -242,17 +246,25 @@ p_component(:,:,1) = invM_ld(1,1) * p_zero_component(:,:,1) + invM_ld(1,2) * p_z
 p_component(:,:,2) = invM_ld(2,1) * p_zero_component(:,:,1) + invM_ld(2,2) * p_zero_component(:,:,2) + invM_ld(2,3) * p_zero_component(:,:,3);
 p_component(:,:,4) = invM_ld(3,1) * p_zero_component(:,:,1) + invM_ld(3,2) * p_zero_component(:,:,2) + invM_ld(3,3) * p_zero_component(:,:,3);
 
-psim_f(:,:,1) = zeros(size(fullResult)); psim_f(:,:,3) = fftshift(fullResult);
+psim_f(:,:,1) = zeros(size(fullResult)); 
 psim_f(:,:,2) = fftshift(pasteFreq(p_component(:,:,4))); psim_f(:,:,4) = fftshift(pasteFreq(p_component(:,:,2)));
+
+% We can also use the SR images provided by the commerical
+% microscope as:
+% psim_f(:,:,3) = fftshift(fft2(SIMSRImg));
+% and skip the multiplying with denom and apo
+psim_f(:,:,3) = fftshift(fullResult);
 
 for i = 1: 1: 4
     psim_f(:,:,i) = psim_f(:,:,i).*fftshift(denom);
     psim_f(:,:,i) = psim_f(:,:,i).*fftshift(apo);
 end
 
+% inverse Fourier Transform
 psim = abs(ifft(ifft(ifft(ifftshift(psim_f),[],1),[],2),[],3));
 
-[sim, psim_om,cm, ouf, ~] = PSIM_display(psim,min(psim(:)),max(psim(:)),false);
+% display
+[sim, psim_om,cm, ~] = PSIM_display(psim,min(psim(:)),max(psim(:)),false);
 
 %% Display the result 
 if displayFlag
