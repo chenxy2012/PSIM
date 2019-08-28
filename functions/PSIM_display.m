@@ -1,5 +1,6 @@
-function [wf, ld_om, cm, ouf, fig] = PSIM_display(ld, cmin, cmax, is_display)
-%%
+% This function is to display the psim dataset in a pseudo-color image
+function [wf, ld_om, cm, fig] = PSIM_display(ld, cmin, cmax, is_display)
+
 ld_s = mean(ld,3); 
 wf = ld_s;
 ld_s = max(ld_s-cmin, 0); 
@@ -37,7 +38,3 @@ h = phy/pi;
 %
 cm_hsv = cat(3, h, s, v);
 cm = hsv2rgb(cm_hsv);
-%%
-ac = abs(ld_of(:,:,2));
-dc = abs(ld_of(:,:,1));
-ouf = ac./dc;
