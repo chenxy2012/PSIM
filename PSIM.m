@@ -47,8 +47,6 @@ saveDir = 'Output\';
 %% Calibration
 % Calibration is to compensate uneven illumination intensity among
 % different directions. Different setup has different performance.
-% Typically, the central part of the field-of-view has better behavior than
-% the side part.
 % calibrationFlag: whether or not use system calibration
 % if use calibration, give the directory of the calibamp
 calibrationFlag = false; 
