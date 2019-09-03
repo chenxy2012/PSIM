@@ -1,3 +1,5 @@
+% Generating OTF information based on SIM parameters
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function  ret =  otfGenerator( NA, lambda, a, attStrength, attFWHM)
 ret.samplesLateral = 512;
 ret.NA = NA; 

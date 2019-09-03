@@ -1,3 +1,5 @@
+% Write otf matrix from the given system parameters
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function vec_out = writeOtfVector(otf, vec, band, kx, ky)
 % false true
 vec_out = zeros(size(vec));

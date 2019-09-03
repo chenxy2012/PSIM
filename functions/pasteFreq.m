@@ -1,3 +1,5 @@
+% Doubleing the Fourier domain and paste the original part in the center
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function outV = pasteFreq(inV)
 wi = size(inV,2);
 hi = size(inV,1);

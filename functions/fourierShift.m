@@ -1,3 +1,5 @@
+% Shift the given component in target position
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function outV = fourierShift( inV, kx, ky )
 % val = inV;
 N = size(inV,1);

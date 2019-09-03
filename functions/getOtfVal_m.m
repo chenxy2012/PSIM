@@ -1,3 +1,5 @@
+% Get otf matrix from the given system parameters
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function v_out = getOtfVal_m( otf, band, r_in, att)
 if ~otf.isMultiBand
     band = 1;

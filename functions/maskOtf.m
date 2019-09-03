@@ -1,3 +1,5 @@
+% Mask OTF function on a give Fourier component
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function vec_out = maskOtf( otf, vec, kx, ky)
 w = size(vec,2);
 h = size(vec,1);

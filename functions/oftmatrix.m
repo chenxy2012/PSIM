@@ -1,3 +1,5 @@
+% Generating OTF matrix
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function v_out = oftmatrix( otf, w, h)
 
 val = zeros(h,w);

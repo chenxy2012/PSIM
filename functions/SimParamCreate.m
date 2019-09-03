@@ -1,3 +1,5 @@
+% Creating SIM Parameters
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function sp = SIMParamCreate(bands, dirs, phases, size, micronsPerPxl )
 sp.nrDirs   = dirs;
 sp.nrBands  = bands;

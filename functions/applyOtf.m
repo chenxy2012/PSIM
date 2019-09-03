@@ -1,3 +1,5 @@
+% Mask otf on the doubled Fourier domain at given position
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function vec_out = applyOtf( otf, vec_in, kx, ky, att)
 w = size(vec_in,2);
 h = size(vec_in,1);

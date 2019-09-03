@@ -1,3 +1,5 @@
+% Fade the border of the input images
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function img_out = fadeBorderCos(img, px)
 w = size(img,2);
 h = size(img,1);

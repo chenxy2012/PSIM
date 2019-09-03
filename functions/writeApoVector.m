@@ -1,3 +1,5 @@
+% Generating apo matrix from the given system parameters
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function vec = writeApoVector( otf, bend, cutOff, h, w)
 
 xx = 1: 1: w;

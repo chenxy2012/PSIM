@@ -1,3 +1,5 @@
+% Write otf matrix from the given system parameters (using otf attentuation)
+% Matlab code of a fairSIM function. https://github.com/fairSIM
 function im = writeAttenuationVector( w, h, str, fwhm,CyclesPerMicron)
 
 im = zeros( h, w);
