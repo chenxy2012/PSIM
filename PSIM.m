@@ -1,13 +1,13 @@
 %% The main program
-% This program is developed for PSIM reconstruction based on the open source fairSIM plugin
+% This program is developed for pSIM reconstruction based on the open source fairSIM plugin
 % More functions are under development
 % 
 % For some reference:
-% PSIM: Zhanghao, Karl, et al. "Super-resolution Imaging of Fluorescent Dipoles by Polarized Structured Illumination Microscopy." arXiv preprint arXiv:1712.05092 (2017).
+% pSIM: Zhanghao, Karl, et al. "Super-resolution Imaging of Fluorescent Dipoles by Polarized Structured Illumination Microscopy." arXiv preprint arXiv:1712.05092 (2017).
 % fairSIM: M¨¹ller, Marcel, et al. "Open-source image reconstruction of super-resolution structured illumination microscopy data in ImageJ." Nature communications 7 (2016): 10980.
 % 
 % website:
-% PSIM:
+% pSIM:
 % fairSIM: https://github.com/fairSIM
 % 
 % For any question, please contact:
@@ -19,7 +19,7 @@
 % available at: https://github.com/fairSIM
 
 % We apply fairSIM as our SIM reconstruction algorithm. However, sometimes we do notice that the quality of fairSIM result
-% is not as good as the HR images provided by commerical microscope (e.g. OMattFWHMX). In this situation, we can skip the fairSIM part 
+% is not as good as the HR images provided by commerical microscope (e.g. GE OMX SR). In this situation, we can skip the fairSIM part 
 % and directly use the HR images for pSIM reconstruction.
 
 %% Parameter k
@@ -45,9 +45,13 @@ read_dir = 'Input\';
 saveDir = 'Output\';
 
 %% Calibration
+% Calibration is to compensate uneven illumination intensity among
+% different directions. Different setup has different performance.
+% Typically, the central part of the field-of-view has better behavior than
+% the side part.
 % calibrationFlag: whether or not use system calibration
 % if use calibration, give the directory of the calibamp
-calibrationFlag = true; 
+calibrationFlag = false; 
 if calibrationFlag
     calib1path = 'Calib\calib1.tif'; 
     calib2path = 'Calib\calib2.tif'; 
@@ -88,30 +92,25 @@ end
 
 %% global parameters
 showDialog =  false;
-nAngles  = 4;   
-nrBands  = 2;
-nrDirs   = 3;
-nrPhases = 3;   
 
-emWavelen = 528;	    
-otfNA     = 1.4;
+% the band in SIM setup
+nrBands  = 2;   % beam number
+nrDirs   = 3;   % illumination direction number
+nrPhases = 3;   % phase number
+
+
+emWavelen = 528;    % emission wavelength
+otfNA     = 1.4;    % NA
 otfCorr   = 0.31;
-pxSize    = 0.080;
+pxSize    = 0.080;  % pixel size
 
-wienParam   = 0.05;
+wienParam   = 0.05; % Wiener filter parameter
+
 attStrength = 0.995;
 attFWHM     = 1.2;
-doAttenuation = true;
+doAttenuation = true; % otf attentuation
 
-otfBeforeShift = true;
-
-findPeak    = true;
-refinePhase = false;
-	
-visualFeedback = 2;
-doFastShift = true;
-
-apoB=0.9;
+apoB=0.9;   % apo parameter
 apoF=2;
 
 %% OTF
@@ -130,6 +129,7 @@ OTF_raw = oftmatrix( otfPr, w, h);
 
 %% calibration 
 if calibrationFlag
+    % calibration map is saved as ratio*10000 in pixel
     calib1 = double(imread(calib1path))/10000;
     calib2 = double(imread(calib2path))/10000;
     
@@ -181,7 +181,7 @@ for d = 1: 1: 3
 end
 
 
-%% Reconstruction
+%% SIM Reconstruction (matlab version of fairSIM)
 fullResult = zeros(2*h,2*w);
 p_zero_component = zeros(h,w,3);
 
@@ -249,16 +249,26 @@ p_component(:,:,4) = invM_ld(3,1) * p_zero_component(:,:,1) + invM_ld(3,2) * p_z
 psim_f(:,:,1) = zeros(size(fullResult)); 
 psim_f(:,:,2) = fftshift(pasteFreq(p_component(:,:,4))); psim_f(:,:,4) = fftshift(pasteFreq(p_component(:,:,2)));
 
-% We can also use the SR images provided by the commerical
-% microscope as:
-% psim_f(:,:,3) = fftshift(fft2(SIMSRImg));
-% and skip the multiplying with denom and apo
-psim_f(:,:,3) = fftshift(fullResult);
 
+psim_f(:,:,3) = fftshift(fullResult);
 for i = 1: 1: 4
     psim_f(:,:,i) = psim_f(:,:,i).*fftshift(denom);
     psim_f(:,:,i) = psim_f(:,:,i).*fftshift(apo);
 end
+
+% % % We can also directly use the SR images provided by the software accompanied 
+% % % by the commerical microscope and skip the multiplying with denom and apo as:
+% % psim_f(:,:,3) = fftshift(fft2(SIMSRImg))*scaleFactor;
+% % for i = 1: 1: 4
+% %     if i ~= 3
+% %         psim_f(:,:,i) = psim_f(:,:,i).*fftshift(denom);
+% %         psim_f(:,:,i) = psim_f(:,:,i).*fftshift(apo);
+% %     end
+% % end
+% % % The scaleFactor is applied since the reconstrucved SR image and the raw
+% % % LR images may not in the same scale.
+
+
 
 % inverse Fourier Transform
 psim = abs(ifft(ifft(ifft(ifftshift(psim_f),[],1),[],2),[],3));
