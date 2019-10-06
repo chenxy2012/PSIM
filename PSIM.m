@@ -13,10 +13,12 @@
 % For any question, please contact:
 % chenxy16@mails.tsinghua.edu.cn
 
+
 %% Input your SIM parameters here
 % For the SIM parameters, if the images is captured by commercial SIM syste there should be an accompanied parameter file. 
 % It can also be estimated with the help of fairSIM plugin, which is
 % available at: https://github.com/fairSIM
+
 
 % We apply fairSIM as our SIM reconstruction algorithm. However, sometimes we do notice that the quality of fairSIM result
 % is not as good as the HR images provided by commerical microscope (e.g. GE OMX SR). In this situation, we can skip the fairSIM part 
@@ -39,6 +41,7 @@ phase = [1.523,2.404,-2.033];
 % illumination patterns and n (3 for 2D SIM) denotes the number of the phases in each
 % pattern.
 % The input images in the folder should named as '1.tif', '2.tif', ... 'm*n.tif'  
+% The test image is the alexa 488 label actin in BAPE cell
 read_dir = 'Input\';
 
 %% Directory of the output images
@@ -126,6 +129,7 @@ OTF_raw = oftmatrix( otfPr, w, h);
 % OTF_general = oftmatrix( otfPr, 2*w, 2*h);
 
 %% calibration 
+%% if the calibrationFlag is set as "false", this module will not execute
 if calibrationFlag
     % calibration map is saved as ratio*10000 in pixel
     calib1 = double(imread(calib1path))/10000;
@@ -233,7 +237,7 @@ apo = writeApoVector( otfPr, apoB, apoF, 2*h, 2*w);
 fullResult_filtered = fullResult_filtered .* apo;
 
 
-%% pSIM
+%% pSIM reconstruction
 theta = atan2(k(:,2),k(:,1));
 M_ld = 0.5*[1 0.5*exp(2i*theta(1)) 0.5*exp(-2i*theta(1));
     1 0.5*exp(2i*theta(2)) 0.5*exp(-2i*theta(2));
@@ -263,15 +267,16 @@ end
 % %         psim_f(:,:,i) = psim_f(:,:,i).*fftshift(apo);
 % %     end
 % % end
+% % % "SIMSRImg is the HR reconstructed from the software of your commerial
+% % % SIM scope
 % % % The scaleFactor is applied since the reconstrucved SR image and the raw
 % % % LR images may not in the same scale.
-
 
 
 % inverse Fourier Transform
 psim = abs(ifft(ifft(ifft(ifftshift(psim_f),[],1),[],2),[],3));
 
-% display
+% display the psim image as dipole orientation indicited by colorwheel
 [sim, psim_om,cm, ~] = PSIM_display(psim,min(psim(:)),max(psim(:)),false);
 
 %% Display the result 
